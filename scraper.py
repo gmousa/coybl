@@ -27,6 +27,29 @@ tables_config = {
     },
 }
 
+tables_config_2 = {
+    "hs-nj-standings": {
+        "url": "https://www.leaguelineup.com/standings_basketball.asp?url=nacopticleague&divisionid=468030",
+        "title": "High School NJ"
+    },
+    "girls-standings": {
+        "url": "https://www.leaguelineup.com/standings_basketball.asp?url=nacopticleague&divisionid=468032",
+        "title": "Girls"
+    },
+    "junior-high-standings": {
+        "url": "https://www.leaguelineup.com/standings_basketball.asp?url=nacopticleague&divisionid=468033",
+        "title": "Junior High School"
+    },
+    "college-standings": {
+        "url": "https://www.leaguelineup.com/standings_basketball.asp?url=nacopticleague&divisionid=845568",
+        "title": "College"
+    },
+    "hs-ny-standings": {
+        "url": "https://www.leaguelineup.com/standings_basketball.asp?url=nacopticleague&divisionid=1020928",
+        "title": "High School NY"
+    },
+}
+
 def scrape_table(url):
     # Your existing scrape_table function remains the same
     response = requests.get(url)
@@ -44,7 +67,8 @@ def scrape_table(url):
         return str(table)
     return "<p>No table found</p>"
 
-def create_html_content(table_html, title):
+def create_html_content(table_html, title, nav_links):
+    nav_html = "".join([f'<a href="{link}.html">{name}</a>' for link, name in nav_links.items()])
     return f"""
 <!DOCTYPE html>
 <html>
@@ -118,11 +142,7 @@ def create_html_content(table_html, title):
 </head>
 <body>
     <div class="navigation">
-        <a href="hs_nj.html">High School NJ</a>
-        <a href="girls.html">Girls</a>
-        <a href="junior_high.html">Junior High</a>
-        <a href="college.html">College</a>
-        <a href="hs_ny.html">High School NY</a>
+        {nav_html}
     </div>
     <h1 style="text-align: center;">{title}</h1>
     <div class="table-responsive">
@@ -137,6 +157,13 @@ def create_html_content(table_html, title):
 
 # Your existing file creation code remains the same
 for endpoint, config in tables_config.items():
+    table_html = scrape_table(config["url"])
+    html_content = create_html_content(table_html, config["title"])
+    filename = f"{endpoint}.html"
+    with open(filename, "w", encoding="utf-8") as f:
+        f.write(html_content)
+
+for endpoint, config in tables_config_2.items():
     table_html = scrape_table(config["url"])
     html_content = create_html_content(table_html, config["title"])
     filename = f"{endpoint}.html"
