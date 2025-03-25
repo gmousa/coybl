@@ -67,6 +67,24 @@ def scrape_table(url):
         return str(table)
     return "<p>No table found</p>"
 
+
+def scrape_table_2(url):
+    # Your existing scrape_table function remains the same
+    response = requests.get(url)
+    soup = BeautifulSoup(response.text, 'html.parser')
+    table = soup.find('table', {'class': 'table-striped'})
+    if table:
+        # Add a class to the table for DataTables
+        table['class'] = ['table-striped', 'display']
+        table['id'] = 'myTable'
+        for font_tag in table.find_all('font'):
+            font_tag.replace_with(font_tag.string)
+        for a_tag in table.find_all('a'):
+            if 'style' in a_tag.attrs:
+                del a_tag['style']
+        return str(table)
+    return "<p>No table found</p>"
+
 def create_html_content(table_html, title):
     return f"""
 <!DOCTYPE html>
@@ -258,7 +276,7 @@ for endpoint, config in tables_config.items():
         f.write(html_content)
 
 for endpoint, config in tables_config_2.items():
-    table_html = scrape_table(config["url"])
+    table_html = scrape_table_2(config["url"])
     html_content = create_html_content(table_html, config["title"])
     filename = f"{endpoint}.html"
     with open(filename, "w", encoding="utf-8") as f:
