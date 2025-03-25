@@ -5,7 +5,7 @@ import os
 
 # Define your URLs for each table with their desired endpoints
 tables_config = {
-    "hs_nj": {
+    "hs-nj": {
         "url": "https://www.leaguelineup.com/schedules.asp?url=nacopticleague&divisionid=468030",
         "title": "High School NJ"
     },
@@ -13,7 +13,7 @@ tables_config = {
         "url": "https://www.leaguelineup.com/schedules.asp?url=nacopticleague&divisionid=468032",
         "title": "Girls"
     },
-    "junior_high": {
+    "junior-high": {
         "url": "https://www.leaguelineup.com/schedules.asp?url=nacopticleague&divisionid=468033",
         "title": "Junior High School"
     },
@@ -21,7 +21,7 @@ tables_config = {
         "url": "https://www.leaguelineup.com/schedules.asp?url=nacopticleague&divisionid=845568",
         "title": "College"
     },
-    "hs_ny": {
+    "hs-ny": {
         "url": "https://www.leaguelineup.com/schedules.asp?url=nacopticleague&divisionid=1020928",
         "title": "High School NY"
     },
@@ -74,10 +74,10 @@ def create_html_content(table_html, title):
         text-decoration: none;
     }}
     tr:nth-child(even) {{
-        background-color: F2F2F2_1;
+        background-color: #F2F2F2;
     }}
     .navigation {{
-        background: F8F9FA_1;
+        background: #F8F9FA;
         padding: 1rem;
         margin-bottom: 2rem;
         text-align: center;
@@ -90,7 +90,7 @@ def create_html_content(table_html, title):
         padding: 0.5rem 1rem;
     }}
     .navigation a:hover {{
-        background: E9ECEF_1;
+        background: #E9ECEF;
         border-radius: 4px;
     }}
     </style>
