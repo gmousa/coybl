@@ -3,7 +3,29 @@ from bs4 import BeautifulSoup
 from datetime import datetime
 import os
 
-# Your existing tables_config remains the same
+# Define your URLs for each table with their desired endpoints
+tables_config = {
+    "hs-nj": {
+        "url": "https://www.leaguelineup.com/schedules.asp?url=nacopticleague&divisionid=468030",
+        "title": "High School NJ"
+    },
+    "girls": {
+        "url": "https://www.leaguelineup.com/schedules.asp?url=nacopticleague&divisionid=468032",
+        "title": "Girls"
+    },
+    "junior-high": {
+        "url": "https://www.leaguelineup.com/schedules.asp?url=nacopticleague&divisionid=468033",
+        "title": "Junior High School"
+    },
+    "college": {
+        "url": "https://www.leaguelineup.com/schedules.asp?url=nacopticleague&divisionid=845568",
+        "title": "College"
+    },
+    "hs-ny": {
+        "url": "https://www.leaguelineup.com/schedules.asp?url=nacopticleague&divisionid=1020928",
+        "title": "High School NY"
+    },
+}
 
 def scrape_table(url):
     # Your existing scrape_table function remains the same
