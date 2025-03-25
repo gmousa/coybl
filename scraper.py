@@ -277,7 +277,7 @@ for endpoint, config in tables_config.items():
 
 for endpoint, config in tables_config_2.items():
     table_html = scrape_table_2(config["url"])
-    html_content = create_html_content(table_html, config["title"])
+    html_content = create_html_content_2(table_html, config["title"])
     filename = f"{endpoint}.html"
     with open(filename, "w", encoding="utf-8") as f:
         f.write(html_content)
