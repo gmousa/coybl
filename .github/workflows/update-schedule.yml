@@ -2,14 +2,18 @@ name: Update Schedule
 
 on:
   schedule:
-    - cron: '0 0 * * *'  # Runs daily at midnight
-  workflow_dispatch:  # Allows manual trigger
+    - cron: '0 0 * * *'
+  workflow_dispatch:
 
 jobs:
   update-schedule:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write    # This is important!
     steps:
     - uses: actions/checkout@v2
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}  # Add this line
 
     - name: Set up Python
       uses: actions/setup-python@v2
@@ -22,14 +26,12 @@ jobs:
         pip install requests beautifulsoup4 PyGithub
 
     - name: Run scraper
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: python scraper.py
 
     - name: Commit and push if changed
       run: |
-        git config --global user.name 'GitHub Action'
-        git config --global user.email 'action@github.com'
+        git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+        git config --local user.name "github-actions[bot]"
         git add .
         git commit -m "Update schedule" || exit 0
         git push
