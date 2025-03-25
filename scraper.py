@@ -52,79 +52,111 @@ def create_html_content(table_html, title):
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{title}</title>
-    <!-- Add DataTables CSS -->
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/responsive/2.2.9/css/responsive.dataTables.min.css">
 
-    <!-- Add jQuery -->
-    <script type="text/javascript" src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <!-- DataTables CSS -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/2.3.6/css/buttons.dataTables.min.css">
 
-    <!-- Add DataTables JS -->
-    <script type="text/javascript" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
-    <script type="text/javascript" src="https://cdn.datatables.net/responsive/2.2.9/js/dataTables.responsive.min.js"></script>
+    <!-- jQuery -->
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- DataTables JS -->
+    <script type="text/javascript" src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/buttons/2.3.6/js/dataTables.buttons.min.js"></script>
 
     <style>
+    body {{
+        font-family: Arial, sans-serif;
+        margin: 20px;
+    }}
     .table-responsive {{
         width: 100%;
         margin: 0 auto;
         clear: both;
         padding: 20px;
     }}
-    table {{
+    #myTable {{
         width: 100%;
         border-collapse: collapse;
-        color: black !important;
+        margin-top: 20px;
     }}
-    td, th {{
-        padding: 8px;
-        color: black !important;
+    #myTable th {{
+        background-color: F2F2F2_1;
+        padding: 12px;
+        text-align: left;
+        border: 1px solid #ddd;
     }}
-    a {{
-        color: black !important;
-        text-decoration: none;
+    #myTable td {{
+        padding: 12px;
+        border: 1px solid #ddd;
     }}
-    .navigation {{
-        background: F8F9FA_1;
-        padding: 1rem;
-        margin-bottom: 2rem;
-        text-align: center;
-        border-bottom: 1px solid #ddd;
+    #myTable_filter {{
+        margin-bottom: 20px;
     }}
-    .navigation a {{
-        margin: 0 1rem;
-        color: #333;
-        text-decoration: none;
-        padding: 0.5rem 1rem;
-    }}
-    .navigation a:hover {{
-        background: E9ECEF_1;
+    #myTable_filter input {{
+        padding: 5px;
+        margin-left: 10px;
+        border: 1px solid #ddd;
         border-radius: 4px;
+    }}
+    .dataTables_wrapper .dataTables_filter {{
+        float: none;
+        text-align: center;
+        margin-bottom: 20px;
+    }}
+    .dataTables_wrapper .dataTables_length {{
+        float: none;
+        text-align: center;
+        margin-bottom: 20px;
     }}
     </style>
 
     <script>
     $(document).ready(function() {{
-        $('#myTable').DataTable({{
-            responsive: true,
+        // Initialize DataTable
+        var table = $('#myTable').DataTable({{
             pageLength: 25,
+            lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
             order: [[0, 'asc']],
-            dom: 'Bfrtip',
-            buttons: [
-                'copy', 'csv', 'excel', 'pdf', 'print'
-            ]
+            dom: '<"top"lf>rt<"bottom"ip><"clear">',
+            language: {{
+                search: "Filter records:",
+                lengthMenu: "Show _MENU_ entries per page"
+            }},
+            initComplete: function () {{
+                // Add individual column filtering
+                this.api().columns().every(function () {{
+                    var column = this;
+                    var header = $(column.header());
+                    var title = header.text();
+
+                    // Create input element
+                    var input = $('<input type="text" placeholder="Filter ' + title + '" style="width: 100%; box-sizing: border-box; margin-top: 5px;"/>')
+                        .appendTo(header)
+                        .on('keyup change', function () {{
+                            if (column.search() !== this.value) {{
+                                column
+                                    .search(this.value)
+                                    .draw();
+                            }}
+                        }});
+                }});
+            }}
+        }});
+
+        // Adjust iframe height when table is filtered/sorted
+        table.on('draw', function() {{
+            if (window.parent && window.parent.postMessage) {{
+                setTimeout(function() {{
+                    var height = document.documentElement.scrollHeight;
+                    window.parent.postMessage({{'height': height}}, '*');
+                }}, 100);
+            }}
         }});
     }});
     </script>
 </head>
 <body>
-    <div class="navigation">
-        <a href="hs_nj.html">High School NJ</a>
-        <a href="girls.html">Girls</a>
-        <a href="junior_high.html">Junior High</a>
-        <a href="college.html">College</a>
-        <a href="hs_ny.html">High School NY</a>
-    </div>
-    <h1 style="text-align: center;">{title}</h1>
     <div class="table-responsive">
         {table_html}
     </div>
