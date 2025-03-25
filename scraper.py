@@ -62,7 +62,7 @@ tr:nth-child(even) {{
 """
 
 # Save the HTML content to a file
-with open("scraped_table.html", "w") as file:
+with open("index.html", "w") as file:
     file.write(responsive_html)
 
 
