@@ -205,7 +205,7 @@ def create_html_content(table_html, title):
             responsive: true,
             pageLength: 25,
             order: [[0, 'asc']],
-            dom: 'QBfrtip',
+            dom: 'Bfrtip',
             buttons: [
                 'copy', 'csv', 'excel', 'pdf', 'print'
             ],
