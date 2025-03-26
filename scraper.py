@@ -136,6 +136,7 @@ def create_html_content(table_html, title):
     <title>{title}</title>
     <!-- Add DataTables CSS -->
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/responsive/2.2.9/css/responsive.dataTables.min.css">
 
     <!-- Add jQuery -->
     <script type="text/javascript" src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
@@ -147,6 +148,7 @@ def create_html_content(table_html, title):
 
     <!-- Add DataTables CSS -->
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/responsive/2.2.9/css/responsive.dataTables.min.css">
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/2.3.6/css/buttons.dataTables.min.css">
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/searchbuilder/1.4.2/css/searchBuilder.dataTables.min.css">
 
@@ -197,16 +199,6 @@ def create_html_content(table_html, title):
         border-radius: 4px;
     }}
     </style>
-    table.dataTable {{
-        width: 100% !important;
-        margin: 0 auto;
-        clear: both;
-        border-collapse: separate;
-        border-spacing: 0;
-    }}
-    .dataTables_wrapper {{
-        width: 100%;
-    }}
 
    <script>
     $(document).ready(function() {{
@@ -214,6 +206,7 @@ def create_html_content(table_html, title):
         $('#myTable thead tr').clone(true).addClass('filters').appendTo('#myTable thead');
 
         var table = $('#myTable').DataTable({{
+            responsive: true,
             pageLength: 25,
             order: [[0, 'asc']],
             dom: 'Bfrtip',
@@ -222,9 +215,6 @@ def create_html_content(table_html, title):
             ],
             orderCellsTop: true,
             fixedHeader: true,
-            responsive: false,
-            autoWidth: true,
-            scrollX: true,
             columnDefs: [{{
                 orderable: false,
                 targets: '_all'
@@ -238,15 +228,16 @@ def create_html_content(table_html, title):
                     var select = $('<select><option value="">All</option></select>')
                         .appendTo($(column.header()).empty())
                         .on('change', function (e) {{
-                            e.stopPropagation();
+                            e.stopPropagation(); // Prevent event bubbling
                             var val = $.fn.dataTable.util.escapeRegex($(this).val());
                             column
                                 .search(val ? '^'+val+'$' : '', true, false)
                                 .draw();
                         }});
 
+                    // Get unique values from this specific column
                     column.data().unique().sort().each(function(d, j) {{
-                        if(d) {{
+                        if(d) {{ // Only add non-empty values
                             select.append('<option value="'+d+'">'+d+'</option>')
                         }}
                     }});
@@ -285,12 +276,14 @@ def create_html_content_2(table_html, title):
     <title>{title}</title>
     <!-- Add DataTables CSS -->
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/responsive/2.2.9/css/responsive.dataTables.min.css">
 
     <!-- Add jQuery -->
     <script type="text/javascript" src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 
     <!-- Add DataTables JS -->
     <script type="text/javascript" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/responsive/2.2.9/js/dataTables.responsive.min.js"></script>
 
     <style>
     .table-responsive {{
@@ -338,16 +331,6 @@ def create_html_content_2(table_html, title):
     .filters th {{
         padding: 4px !important;
     }}
-    table.dataTable {{
-        width: 100% !important;
-        margin: 0 auto;
-        clear: both;
-        border-collapse: separate;
-        border-spacing: 0;
-    }}
-    .dataTables_wrapper {{
-        width: 100%;
-    }}
     </style>
 
     <script>
@@ -356,6 +339,7 @@ def create_html_content_2(table_html, title):
         $('#myTable thead tr').clone(true).addClass('filters').appendTo('#myTable thead');
 
         var table = $('#myTable').DataTable({{
+            responsive: true,
             pageLength: 25,
             order: [[0, 'asc']],
             dom: 'Bfrtip',
@@ -364,9 +348,6 @@ def create_html_content_2(table_html, title):
             ],
             orderCellsTop: true,
             fixedHeader: true,
-            responsive: false,
-            autoWidth: true,
-            scrollX: true,
             columnDefs: [{{
                 orderable: false,
                 targets: '_all'
@@ -380,15 +361,16 @@ def create_html_content_2(table_html, title):
                     var select = $('<select><option value="">All</option></select>')
                         .appendTo($(column.header()).empty())
                         .on('change', function (e) {{
-                            e.stopPropagation();
+                            e.stopPropagation(); // Prevent event bubbling
                             var val = $.fn.dataTable.util.escapeRegex($(this).val());
                             column
                                 .search(val ? '^'+val+'$' : '', true, false)
                                 .draw();
                         }});
 
+                    // Get unique values from this specific column
                     column.data().unique().sort().each(function(d, j) {{
-                        if(d) {{
+                        if(d) {{ // Only add non-empty values
                             select.append('<option value="'+d+'">'+d+'</option>')
                         }}
                     }});
