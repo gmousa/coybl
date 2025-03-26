@@ -57,6 +57,9 @@
 
     <script>
     $(document).ready(function() {
+        // Add input field to each column header
+        $('#myTable thead tr').clone(true).addClass('filters').appendTo('#myTable thead');
+
         $('#myTable').DataTable({
             responsive: true,
             pageLength: 25,
@@ -64,7 +67,43 @@
             dom: 'Bfrtip',
             buttons: [
                 'copy', 'csv', 'excel', 'pdf', 'print'
-            ]
+            ],
+            orderCellsTop: true,
+            fixedHeader: true,
+            initComplete: function () {
+                var api = this.api();
+
+                // For each column
+                api.columns().eq(0).each(function(colIdx) {
+                    // Add a text input field to each column header
+                    var cell = $('.filters th').eq($(api.column(colIdx).header()).index());
+                    var title = $(cell).text();
+                    $(cell).html('<input type="text" placeholder="Filter ' + title + '" />');
+
+                    // On keyup in the filter input
+                    $('input', $('.filters th').eq($(api.column(colIdx).header()).index()))
+                        .off('keyup change')
+                        .on('keyup change', function (e) {
+                            e.stopPropagation();
+
+                            // Get the search value
+                            $(this).attr('title', $(this).val());
+                            var regexr = '({search})';
+
+                            // Search the column for that value
+                            api
+                                .column(colIdx)
+                                .search(
+                                    this.value != ''
+                                        ? regexr.replace('{search}', '(((' + this.value + ')))')
+                                        : '',
+                                    this.value != '',
+                                    this.value == ''
+                                )
+                                .draw();
+                        });
+                });
+            }
         });
     });
     </script>
@@ -85,7 +124,7 @@
 <th class="ccenter" width="50">Won</th><th class="ccenter" width="50">Lost</th><th class="ccenter" width="50">Tied</th><th class="ccenter" width="50">Pct.</th><th class="ccenter" width="50">PF</th><th class="ccenter" width="50">PA</th><th class="ccenter" width="50">PD</th></tr><tr height="30"><td><a href="teams_basketball.asp?url=nacopticleague&amp;teamid=7037533">#1  Staten Island 1 Team 1</a></td><td align="center">9</td><td align="center">1</td><td align="center">0</td><td align="center">.900</td><td align="center">386</td><td align="center">166</td><td align="center">220</td></tr><tr class="alt" height="30"><td><a href="teams_basketball.asp?url=nacopticleague&amp;teamid=7037536">#2  Brooklyn 1</a></td><td align="center">8</td><td align="center">1</td><td align="center">0</td><td align="center">.889</td><td align="center">319</td><td align="center">169</td><td align="center">150</td></tr><tr height="30"><td><a href="teams_basketball.asp?url=nacopticleague&amp;teamid=7037543">#3  Astoria</a></td><td align="center">8</td><td align="center">2</td><td align="center">0</td><td align="center">.800</td><td align="center">265</td><td align="center">186</td><td align="center">79</td></tr><tr class="alt" height="30"><td><a href="teams_basketball.asp?url=nacopticleague&amp;teamid=7037532">#4  Queens</a></td><td align="center">6</td><td align="center">3</td><td align="center">0</td><td align="center">.667</td><td align="center">316</td><td align="center">213</td><td align="center">103</td></tr><tr height="30"><td><a href="teams_basketball.asp?url=nacopticleague&amp;teamid=7037539">#5  Bayonne 2 Team 1</a></td><td align="center">4</td><td align="center">5</td><td align="center">0</td><td align="center">.444</td><td align="center">298</td><td align="center">214</td><td align="center">84</td></tr><tr class="alt" height="30"><td><a href="teams_basketball.asp?url=nacopticleague&amp;teamid=7037542">Long Island</a></td><td align="center">3</td><td align="center">5</td><td align="center">0</td><td align="center">.375</td><td align="center">192</td><td align="center">248</td><td align="center">-56</td></tr><tr height="30"><td><a href="teams_basketball.asp?url=nacopticleague&amp;teamid=7037534">Staten Island 1 Team 2</a></td><td align="center">3</td><td align="center">5</td><td align="center">0</td><td align="center">.375</td><td align="center">201</td><td align="center">314</td><td align="center">-113</td></tr><tr class="alt" height="30"><td><a href="teams_basketball.asp?url=nacopticleague&amp;teamid=7037535">#6  Staten Island 2</a></td><td align="center">3</td><td align="center">6</td><td align="center">0</td><td align="center">.333</td><td align="center">215</td><td align="center">304</td><td align="center">-89</td></tr><tr height="30"><td><a href="teams_basketball.asp?url=nacopticleague&amp;teamid=7037541">Bayonne 1</a></td><td align="center">2</td><td align="center">6</td><td align="center">0</td><td align="center">.250</td><td align="center">186</td><td align="center">287</td><td align="center">-101</td></tr><tr class="alt" height="30"><td><a href="teams_basketball.asp?url=nacopticleague&amp;teamid=7037537">Brooklyn 2</a></td><td align="center">1</td><td align="center">7</td><td align="center">0</td><td align="center">.125</td><td align="center">144</td><td align="center">265</td><td align="center">-121</td></tr><tr height="30"><td><a href="teams_basketball.asp?url=nacopticleague&amp;teamid=7037540">Bayonne 2 Team 2</a></td><td align="center">0</td><td align="center">8</td><td align="center">0</td><td align="center">.000</td><td align="center">140</td><td align="center">298</td><td align="center">-158</td></tr></table>
     </div>
     <p style="text-align: center; font-size: 0.8em;">
-        Last updated: 2025-03-25 22:52:29 UTC
+        Last updated: 2025-03-26 00:49:55 UTC
     </p>
 </body>
 </html>
