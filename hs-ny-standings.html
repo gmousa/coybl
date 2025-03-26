@@ -23,6 +23,29 @@
         clear: both;
         padding: 20px;
     }
+    table.dataTable {
+        width: 100% !important;
+        margin: 0 auto;
+        clear: both;
+        border-collapse: separate;
+        border-spacing: 0;
+        table-layout: fixed;
+    }
+    .dataTables_wrapper {
+        width: 100%;
+    }
+    thead tr:first-child th {
+        text-align: left;
+        white-space: nowrap;
+    }
+    td {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .filters select {
+        width: 100%;
+    }
     table {
         width: 100%;
         border-collapse: collapse;
@@ -70,7 +93,6 @@
         $('#myTable thead tr').clone(true).addClass('filters').appendTo('#myTable thead');
 
         var table = $('#myTable').DataTable({
-            responsive: true,
             pageLength: 25,
             order: [[0, 'asc']],
             dom: 'Bfrtip',
@@ -79,37 +101,42 @@
             ],
             orderCellsTop: true,
             fixedHeader: true,
-            columnDefs: [{
-                orderable: false,
-                targets: '_all'
-            }],
             responsive: false,
-            scrollX: true,
+            autoWidth: false,
+            columnDefs: [
+                {
+                    orderable: false,
+                    targets: '_all'
+                },
+                {
+                    className: 'dt-head-left dt-body-left',
+                    targets: '_all'
+                }
+            ],
             initComplete: function () {
-                var api = this.api();
-
-                // For each column
-                api.columns().every(function () {
+                this.api().columns().every(function () {
                     var column = this;
                     var select = $('<select><option value="">All</option></select>')
                         .appendTo($(column.header()).empty())
                         .on('change', function (e) {
-                            e.stopPropagation(); // Prevent event bubbling
+                            e.stopPropagation();
                             var val = $.fn.dataTable.util.escapeRegex($(this).val());
                             column
                                 .search(val ? '^'+val+'$' : '', true, false)
                                 .draw();
                         });
 
-                    // Get unique values from this specific column
                     column.data().unique().sort().each(function(d, j) {
-                        if(d) { // Only add non-empty values
+                        if(d) {
                             select.append('<option value="'+d+'">'+d+'</option>')
                         }
                     });
                 });
             }
         });
+
+        // Adjust column widths after initialization
+        table.columns.adjust();
     });
     </script>
 </head>
@@ -126,7 +153,7 @@
         <table class="table-striped display" id="myTable"><thead><tr><th>Team</th><th>Won</th><th>Lost</th><th>Tied</th><th>Pct.</th><th>PF</th><th>PA</th><th>PD</th></tr></thead><tbody><tr><td>#1  Staten Island 1 Team 1</td><td>9</td><td>1</td><td>0</td><td>.900</td><td>386</td><td>166</td><td>220</td></tr><tr><td>#2  Brooklyn 1</td><td>8</td><td>1</td><td>0</td><td>.889</td><td>319</td><td>169</td><td>150</td></tr><tr><td>#3  Astoria</td><td>8</td><td>2</td><td>0</td><td>.800</td><td>265</td><td>186</td><td>79</td></tr><tr><td>#4  Queens</td><td>6</td><td>3</td><td>0</td><td>.667</td><td>316</td><td>213</td><td>103</td></tr><tr><td>#5  Bayonne 2 Team 1</td><td>4</td><td>5</td><td>0</td><td>.444</td><td>298</td><td>214</td><td>84</td></tr><tr><td>Long Island</td><td>3</td><td>5</td><td>0</td><td>.375</td><td>192</td><td>248</td><td>-56</td></tr><tr><td>Staten Island 1 Team 2</td><td>3</td><td>5</td><td>0</td><td>.375</td><td>201</td><td>314</td><td>-113</td></tr><tr><td>#6  Staten Island 2</td><td>3</td><td>6</td><td>0</td><td>.333</td><td>215</td><td>304</td><td>-89</td></tr><tr><td>Bayonne 1</td><td>2</td><td>6</td><td>0</td><td>.250</td><td>186</td><td>287</td><td>-101</td></tr><tr><td>Brooklyn 2</td><td>1</td><td>7</td><td>0</td><td>.125</td><td>144</td><td>265</td><td>-121</td></tr><tr><td>Bayonne 2 Team 2</td><td>0</td><td>8</td><td>0</td><td>.000</td><td>140</td><td>298</td><td>-158</td></tr></tbody></table>
     </div>
     <p style="text-align: center; font-size: 0.8em;">
-        Last updated: 2025-03-26 01:28:12 UTC
+        Last updated: 2025-03-26 01:33:32 UTC
     </p>
 </body>
 </html>
