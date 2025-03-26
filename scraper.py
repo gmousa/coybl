@@ -247,7 +247,7 @@ def create_html_content(table_html, title):
         }});
 
         // Populate date filter (assuming date is in column 0)
-        var dates = table.column(0).data().unique().sort().each(function(d) {{
+        var dates = table.column(1).data().unique().sort().each(function(d) {{
             $('#dateFilter').append($('<option>', {{
                 value: d,
                 text: d
@@ -255,7 +255,7 @@ def create_html_content(table_html, title):
         }});
 
         // Populate venue filter (assuming venue is in column 2)
-        var venues = table.column(7).data().unique().sort().each(function(d) {{
+        var venues = table.column(8).data().unique().sort().each(function(d) {{
             $('#venueFilter').append($('<option>', {{
                 value: d,
                 text: d
@@ -264,8 +264,8 @@ def create_html_content(table_html, title):
 
         // Populate team filter (combining home and visitor teams)
         var teams = new Set();
-        table.column(5).data().each(function(d) {{ teams.add(d); }}); // Home teams
-        table.column(6).data().each(function(d) {{ teams.add(d); }}); // Visiting teams
+        table.column(6).data().each(function(d) {{ teams.add(d); }}); // Home teams
+        table.column(7).data().each(function(d) {{ teams.add(d); }}); // Visiting teams
         Array.from(teams).sort().forEach(function(team) {{
             $('#teamFilter').append($('<option>', {{
                 value: team,
@@ -275,17 +275,17 @@ def create_html_content(table_html, title):
 
         // Filter handlers
         $('#dateFilter').on('change', function() {{
-            table.column(0).search(this.value).draw();
+            table.column(1).search(this.value).draw();
         }});
 
         $('#venueFilter').on('change', function() {{
-            table.column(7).search(this.value).draw();
+            table.column(8).search(this.value).draw();
         }});
 
         $('#teamFilter').on('change', function() {{
             var searchTerm = this.value;
-            table.column(5).search(searchTerm)
-                .column(6).search(searchTerm)
+            table.column(6).search(searchTerm)
+                .column(7).search(searchTerm)
                 .draw();
         }});
 
