@@ -201,6 +201,9 @@ def create_html_content(table_html, title):
 
     <script>
     $(document).ready(function() {{
+        // Add input field to each column header
+        $('#myTable thead tr').clone(true).addClass('filters').appendTo('#myTable thead');
+
         $('#myTable').DataTable({{
             responsive: true,
             pageLength: 25,
@@ -209,8 +212,41 @@ def create_html_content(table_html, title):
             buttons: [
                 'copy', 'csv', 'excel', 'pdf', 'print'
             ],
-            searchBuilder: {{
-                columns: '_all'
+            orderCellsTop: true,
+            fixedHeader: true,
+            initComplete: function () {{
+                var api = this.api();
+
+                // For each column
+                api.columns().eq(0).each(function(colIdx) {{
+                    // Add a text input field to each column header
+                    var cell = $('.filters th').eq($(api.column(colIdx).header()).index());
+                    var title = $(cell).text();
+                    $(cell).html('<input type="text" placeholder="Filter ' + title + '" />');
+
+                    // On keyup in the filter input
+                    $('input', $('.filters th').eq($(api.column(colIdx).header()).index()))
+                        .off('keyup change')
+                        .on('keyup change', function (e) {{
+                            e.stopPropagation();
+
+                            // Get the search value
+                            $(this).attr('title', $(this).val());
+                            var regexr = '({{search}})';
+
+                            // Search the column for that value
+                            api
+                                .column(colIdx)
+                                .search(
+                                    this.value != ''
+                                        ? regexr.replace('{{search}}', '(((' + this.value + ')))')
+                                        : '',
+                                    this.value != '',
+                                    this.value == ''
+                                )
+                                .draw();
+                        }});
+                }});
             }}
         }});
     }});
