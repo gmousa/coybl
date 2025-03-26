@@ -23,29 +23,6 @@
         clear: both;
         padding: 20px;
     }
-    table.dataTable {
-        width: 100% !important;
-        margin: 0 auto;
-        clear: both;
-        border-collapse: separate;
-        border-spacing: 0;
-        table-layout: fixed;
-    }
-    .dataTables_wrapper {
-        width: 100%;
-    }
-    thead tr:first-child th {
-        text-align: left;
-        white-space: nowrap;
-    }
-    td {
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-    .filters select {
-        width: 100%;
-    }
     table {
         width: 100%;
         border-collapse: collapse;
@@ -93,6 +70,7 @@
         $('#myTable thead tr').clone(true).addClass('filters').appendTo('#myTable thead');
 
         var table = $('#myTable').DataTable({
+            responsive: true,
             pageLength: 25,
             order: [[0, 'asc']],
             dom: 'Bfrtip',
@@ -101,42 +79,35 @@
             ],
             orderCellsTop: true,
             fixedHeader: true,
-            responsive: false,
-            autoWidth: false,
-            columnDefs: [
-                {
-                    orderable: false,
-                    targets: '_all'
-                },
-                {
-                    className: 'dt-head-left dt-body-left',
-                    targets: '_all'
-                }
-            ],
+            columnDefs: [{
+                orderable: false,
+                targets: '_all'
+            }],
             initComplete: function () {
-                this.api().columns().every(function () {
+                var api = this.api();
+
+                // For each column
+                api.columns().every(function () {
                     var column = this;
                     var select = $('<select><option value="">All</option></select>')
                         .appendTo($(column.header()).empty())
                         .on('change', function (e) {
-                            e.stopPropagation();
+                            e.stopPropagation(); // Prevent event bubbling
                             var val = $.fn.dataTable.util.escapeRegex($(this).val());
                             column
                                 .search(val ? '^'+val+'$' : '', true, false)
                                 .draw();
                         });
 
+                    // Get unique values from this specific column
                     column.data().unique().sort().each(function(d, j) {
-                        if(d) {
+                        if(d) { // Only add non-empty values
                             select.append('<option value="'+d+'">'+d+'</option>')
                         }
                     });
                 });
             }
         });
-
-        // Adjust column widths after initialization
-        table.columns.adjust();
     });
     </script>
 </head>
@@ -153,7 +124,7 @@
         <table class="table-striped display" id="myTable"><thead><tr><th>Team</th><th>Won</th><th>Lost</th><th>Tied</th><th>Pct.</th><th>PF</th><th>PA</th><th>PD</th></tr></thead><tbody><tr><td>#1  Staten Island 1 (Team 1)</td><td>10</td><td>1</td><td>0</td><td>.909</td><td>442</td><td>309</td><td>133</td></tr><tr><td>#2  East Brunswick 1</td><td>8</td><td>2</td><td>0</td><td>.800</td><td>461</td><td>301</td><td>160</td></tr><tr><td>#3  Queens</td><td>7</td><td>2</td><td>0</td><td>.778</td><td>382</td><td>271</td><td>111</td></tr><tr><td>#6  West Side</td><td>8</td><td>3</td><td>0</td><td>.727</td><td>455</td><td>401</td><td>54</td></tr><tr><td>#4  Holmdel</td><td>7</td><td>3</td><td>0</td><td>.700</td><td>477</td><td>360</td><td>117</td></tr><tr><td>#5  East Brunswick 2</td><td>6</td><td>3</td><td>0</td><td>.667</td><td>396</td><td>316</td><td>80</td></tr><tr><td>#7  Long Island</td><td>4</td><td>5</td><td>0</td><td>.444</td><td>330</td><td>358</td><td>-28</td></tr><tr><td>Bayonne 1</td><td>3</td><td>5</td><td>0</td><td>.375</td><td>305</td><td>338</td><td>-33</td></tr><tr><td>Pennsylvania</td><td>3</td><td>5</td><td>0</td><td>.375</td><td>274</td><td>311</td><td>-37</td></tr><tr><td>Brooklyn</td><td>3</td><td>5</td><td>0</td><td>.375</td><td>294</td><td>357</td><td>-63</td></tr><tr><td>Makkar</td><td>3</td><td>5</td><td>0</td><td>.375</td><td>318</td><td>399</td><td>-81</td></tr><tr><td>#8  Staten Island 2</td><td>3</td><td>6</td><td>0</td><td>.333</td><td>320</td><td>318</td><td>2</td></tr><tr><td>East Brunswick 3</td><td>2</td><td>6</td><td>0</td><td>.250</td><td>307</td><td>371</td><td>-64</td></tr><tr><td>Belleville</td><td>2</td><td>6</td><td>0</td><td>.250</td><td>249</td><td>320</td><td>-71</td></tr><tr><td>Staten Island 1 (Team 2)</td><td>1</td><td>7</td><td>0</td><td>.125</td><td>273</td><td>363</td><td>-90</td></tr><tr><td>Bergen</td><td>1</td><td>7</td><td>0</td><td>.125</td><td>240</td><td>430</td><td>-190</td></tr></tbody></table>
     </div>
     <p style="text-align: center; font-size: 0.8em;">
-        Last updated: 2025-03-26 01:37:04 UTC
+        Last updated: 2025-03-26 01:37:53 UTC
     </p>
 </body>
 </html>
