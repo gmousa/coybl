@@ -219,6 +219,8 @@ def create_html_content(table_html, title):
                 orderable: false,
                 targets: '_all'
             }}],
+            responsive: false,
+            scrollX: true,
             initComplete: function () {{
                 var api = this.api();
 
@@ -352,6 +354,8 @@ def create_html_content_2(table_html, title):
                 orderable: false,
                 targets: '_all'
             }}],
+            responsive: false,
+            scrollX: true,
             initComplete: function () {{
                 var api = this.api();
 
