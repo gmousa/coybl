@@ -430,7 +430,7 @@ def create_html_content_2(table_html, title):
     }}
     </style>
 
-    <script>
+   <script>
     $(document).ready(function() {{
         var table = $('#myTable').DataTable({{
             scrollX: true,
@@ -438,13 +438,13 @@ def create_html_content_2(table_html, title):
             paging: false,
             responsive: false,
             autoWidth: false,
-            order: [[0, 'asc']],
-            dom: 'Brt', // Removed 'f' and 'i' to remove search and info
+            ordering: false, // Disable sorting
+            dom: 'Brt', // Minimal display options
             buttons: [
                 'copy', 'csv', 'excel', 'pdf', 'print'
             ],
             columnDefs: [{{
-                orderable: true,
+                orderable: false,
                 targets: '_all',
                 width: 'auto'
             }}]
