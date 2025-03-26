@@ -55,39 +55,37 @@ def scrape_table(url):
     soup = BeautifulSoup(response.text, 'html.parser')
     table = soup.find('table', {'class': 'tableview'})
     if table:
-        # Add a class to the table for DataTables
-        table['class'] = ['tableview', 'display']
-        table['id'] = 'myTable'
+        # Create a new table structure
+        new_table = soup.new_tag('table')
+        new_table['class'] = ['tableview', 'display']
+        new_table['id'] = 'myTable'
 
-        # Process header row
+        # Create thead and tbody
+        thead = soup.new_tag('thead')
+        tbody = soup.new_tag('tbody')
+        new_table.append(thead)
+        new_table.append(tbody)
+
+        # Process the first row as header
         header_row = table.find('tr')
         if header_row:
-            header_cells = header_row.find_all(['td', 'th'])
-            num_columns = len(header_cells)
-            # Convert all header cells to th
-            for cell in header_cells:
+            new_header_row = soup.new_tag('tr')
+            thead.append(new_header_row)
+            for cell in header_row.find_all(['td', 'th']):
                 new_th = soup.new_tag('th')
                 new_th.string = cell.get_text(strip=True)
-                cell.replace_with(new_th)
+                new_header_row.append(new_th)
 
         # Process all other rows
         for row in table.find_all('tr')[1:]:
-            cells = row.find_all(['td', 'th'])
-            # Convert all cells to td
-            for cell in cells:
+            new_row = soup.new_tag('tr')
+            tbody.append(new_row)
+            for cell in row.find_all(['td', 'th']):
                 new_td = soup.new_tag('td')
-                # Preserve text content
                 new_td.string = cell.get_text(strip=True)
-                cell.replace_with(new_td)
+                new_row.append(new_td)
 
-            # Ensure each row has the same number of columns
-            current_cells = len(row.find_all('td'))
-            if current_cells < num_columns:
-                for _ in range(num_columns - current_cells):
-                    new_td = soup.new_tag('td')
-                    row.append(new_td)
-
-        return str(table)
+        return str(new_table)
     return "<p>No table found</p>"
 
 def scrape_table_2(url):
@@ -95,39 +93,37 @@ def scrape_table_2(url):
     soup = BeautifulSoup(response.text, 'html.parser')
     table = soup.find('table', {'class': 'table-striped'})
     if table:
-        # Add a class to the table for DataTables
-        table['class'] = ['table-striped', 'display']
-        table['id'] = 'myTable'
+        # Create a new table structure
+        new_table = soup.new_tag('table')
+        new_table['class'] = ['table-striped', 'display']
+        new_table['id'] = 'myTable'
 
-        # Process header row
+        # Create thead and tbody
+        thead = soup.new_tag('thead')
+        tbody = soup.new_tag('tbody')
+        new_table.append(thead)
+        new_table.append(tbody)
+
+        # Process the first row as header
         header_row = table.find('tr')
         if header_row:
-            header_cells = header_row.find_all(['td', 'th'])
-            num_columns = len(header_cells)
-            # Convert all header cells to th
-            for cell in header_cells:
+            new_header_row = soup.new_tag('tr')
+            thead.append(new_header_row)
+            for cell in header_row.find_all(['td', 'th']):
                 new_th = soup.new_tag('th')
                 new_th.string = cell.get_text(strip=True)
-                cell.replace_with(new_th)
+                new_header_row.append(new_th)
 
         # Process all other rows
         for row in table.find_all('tr')[1:]:
-            cells = row.find_all(['td', 'th'])
-            # Convert all cells to td
-            for cell in cells:
+            new_row = soup.new_tag('tr')
+            tbody.append(new_row)
+            for cell in row.find_all(['td', 'th']):
                 new_td = soup.new_tag('td')
-                # Preserve text content
                 new_td.string = cell.get_text(strip=True)
-                cell.replace_with(new_td)
+                new_row.append(new_td)
 
-            # Ensure each row has the same number of columns
-            current_cells = len(row.find_all('td'))
-            if current_cells < num_columns:
-                for _ in range(num_columns - current_cells):
-                    new_td = soup.new_tag('td')
-                    row.append(new_td)
-
-        return str(table)
+        return str(new_table)
     return "<p>No table found</p>"
 
 def create_html_content(table_html, title):
