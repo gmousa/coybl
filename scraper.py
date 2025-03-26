@@ -179,10 +179,11 @@ def create_html_content(table_html, title):
         text-align: center;
         border-bottom: 1px solid #ddd;
     }}
-    .filters input {{
+    .filters select {{
         width: 100%;
         padding: 3px;
         box-sizing: border-box;
+        margin-top: 3px;
     }}
     .filters th {{
         padding: 4px !important;
@@ -201,10 +202,10 @@ def create_html_content(table_html, title):
 
     <script>
     $(document).ready(function() {{
-        // Add input field to each column header
+        // Setup - add a select to each header cell
         $('#myTable thead tr').clone(true).addClass('filters').appendTo('#myTable thead');
 
-        $('#myTable').DataTable({{
+        var table = $('#myTable').DataTable({{
             responsive: true,
             pageLength: 25,
             order: [[0, 'asc']],
@@ -218,34 +219,27 @@ def create_html_content(table_html, title):
                 var api = this.api();
 
                 // For each column
-                api.columns().eq(0).each(function(colIdx) {{
-                    // Add a text input field to each column header
+                api.columns().eq(0).each(function (colIdx) {{
+                    var column = this;
                     var cell = $('.filters th').eq($(api.column(colIdx).header()).index());
                     var title = $(cell).text();
-                    $(cell).html('<input type="text" placeholder="Filter ' + title + '" />');
 
-                    // On keyup in the filter input
-                    $('input', $('.filters th').eq($(api.column(colIdx).header()).index()))
-                        .off('keyup change')
-                        .on('keyup change', function (e) {{
-                            e.stopPropagation();
-
-                            // Get the search value
-                            $(this).attr('title', $(this).val());
-                            var regexr = '({{search}})';
-
-                            // Search the column for that value
-                            api
-                                .column(colIdx)
-                                .search(
-                                    this.value != ''
-                                        ? regexr.replace('{{search}}', '(((' + this.value + ')))')
-                                        : '',
-                                    this.value != '',
-                                    this.value == ''
-                                )
+                    // Create select element
+                    var select = $('<select><option value="">All</option></select>')
+                        .appendTo($(cell).empty())
+                        .on('change', function () {{
+                            var val = $.fn.dataTable.util.escapeRegex($(this).val());
+                            column
+                                .search(val ? '^'+val+'$' : '', true, false)
                                 .draw();
                         }});
+
+                    // Add options to the select - get unique values from the column
+                    column.data().unique().sort().each(function (d, j) {{
+                        if(d) {{ // Only add non-empty values
+                            select.append('<option value="'+d+'">'+d+'</option>');
+                        }}
+                    }});
                 }});
             }}
         }});
@@ -327,14 +321,23 @@ def create_html_content_2(table_html, title):
         background: E9ECEF_1;
         border-radius: 4px;
     }}
+    .filters select {{
+        width: 100%;
+        padding: 3px;
+        box-sizing: border-box;
+        margin-top: 3px;
+    }}
+    .filters th {{
+        padding: 4px !important;
+    }}
     </style>
 
     <script>
     $(document).ready(function() {{
-        // Add input field to each column header
+        // Setup - add a select to each header cell
         $('#myTable thead tr').clone(true).addClass('filters').appendTo('#myTable thead');
 
-        $('#myTable').DataTable({{
+        var table = $('#myTable').DataTable({{
             responsive: true,
             pageLength: 25,
             order: [[0, 'asc']],
@@ -348,34 +351,27 @@ def create_html_content_2(table_html, title):
                 var api = this.api();
 
                 // For each column
-                api.columns().eq(0).each(function(colIdx) {{
-                    // Add a text input field to each column header
+                api.columns().eq(0).each(function (colIdx) {{
+                    var column = this;
                     var cell = $('.filters th').eq($(api.column(colIdx).header()).index());
                     var title = $(cell).text();
-                    $(cell).html('<input type="text" placeholder="Filter ' + title + '" />');
 
-                    // On keyup in the filter input
-                    $('input', $('.filters th').eq($(api.column(colIdx).header()).index()))
-                        .off('keyup change')
-                        .on('keyup change', function (e) {{
-                            e.stopPropagation();
-
-                            // Get the search value
-                            $(this).attr('title', $(this).val());
-                            var regexr = '({{search}})';
-
-                            // Search the column for that value
-                            api
-                                .column(colIdx)
-                                .search(
-                                    this.value != ''
-                                        ? regexr.replace('{{search}}', '(((' + this.value + ')))')
-                                        : '',
-                                    this.value != '',
-                                    this.value == ''
-                                )
+                    // Create select element
+                    var select = $('<select><option value="">All</option></select>')
+                        .appendTo($(cell).empty())
+                        .on('change', function () {{
+                            var val = $.fn.dataTable.util.escapeRegex($(this).val());
+                            column
+                                .search(val ? '^'+val+'$' : '', true, false)
                                 .draw();
                         }});
+
+                    // Add options to the select - get unique values from the column
+                    column.data().unique().sort().each(function (d, j) {{
+                        if(d) {{ // Only add non-empty values
+                            select.append('<option value="'+d+'">'+d+'</option>');
+                        }}
+                    }});
                 }});
             }}
         }});
