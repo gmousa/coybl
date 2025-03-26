@@ -6,7 +6,7 @@ import os
 # Define your URLs for each table with their desired endpoints
 tables_config = {
     "hs-nj": {
-        "url": "https://www.leaguelineup.com/schedules.asp?url=nacopticleague&divisionid=468030",
+        "url": "https://www.leaguelineup.com/schedules.asp?url=nacopticleague&divisionid=468030&teamid=99999",
         "title": "High School NJ"
     },
     "girls": {
