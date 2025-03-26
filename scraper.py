@@ -228,14 +228,13 @@ def create_html_content(table_html, title):
        <script>
     $(document).ready(function() {{
         var table = $('#myTable').DataTable({{
-            pageLength: 25,
             scrollX: true,
             scrollCollapse: true,
-            paging: true,
+            paging: false,
             responsive: false,
             autoWidth: false,
             order: [[0, 'asc']],
-            dom: 'Brtip',
+            dom: 'Brti',
             buttons: [
                 'copy', 'csv', 'excel', 'pdf', 'print'
             ],
