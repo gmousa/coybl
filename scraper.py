@@ -235,7 +235,7 @@ def create_html_content(table_html, title):
             responsive: false,
             autoWidth: false,
             order: [[0, 'asc']],
-            dom: 'Bfrtip',
+            dom: 'Brtip',
             buttons: [
                 'copy', 'csv', 'excel', 'pdf', 'print'
             ],
@@ -282,12 +282,18 @@ def create_html_content(table_html, title):
             table.column(8).search(this.value).draw();
         }});
 
-        $('#teamFilter').on('change', function() {{
+        $('#teamFilter').on('change', function() {
             var searchTerm = this.value;
-            table.column(6).search(searchTerm)
-                .column(7).search(searchTerm)
-                .draw();
-        }});
+            table.draw(function(settings, data, dataIndex) {
+                var homeTeam = data[6];
+                var visitorTeam = data[7];
+                if (searchTerm === '') {
+                    return true;
+                }
+                return homeTeam === searchTerm || visitorTeam === searchTerm;
+            });
+        });
+
 
         $(window).on('resize', function() {{
             table.columns.adjust();
