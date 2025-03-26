@@ -432,47 +432,22 @@ def create_html_content_2(table_html, title):
 
     <script>
     $(document).ready(function() {{
-        $('#myTable thead tr').clone(true).addClass('filters').appendTo('#myTable thead');
-        
         var table = $('#myTable').DataTable({{
-            pageLength: 25,
             scrollX: true,
             scrollCollapse: true,
-            paging: true,
+            paging: false,
             responsive: false,
             autoWidth: false,
             order: [[0, 'asc']],
-            dom: 'Bfrtip',
+            dom: 'Brt', // Removed 'f' and 'i' to remove search and info
             buttons: [
                 'copy', 'csv', 'excel', 'pdf', 'print'
             ],
             columnDefs: [{{
-                orderable: false,
+                orderable: true,
                 targets: '_all',
                 width: 'auto'
-            }}],
-            initComplete: function () {{
-                var api = this.api();
-                
-                api.columns().every(function () {{
-                    var column = this;
-                    var select = $('<select><option value="">All</option></select>')
-                        .appendTo($(column.header()).empty())
-                        .on('change', function (e) {{
-                            e.stopPropagation();
-                            var val = $.fn.dataTable.util.escapeRegex($(this).val());
-                            column
-                                .search(val ? '^'+val+'$' : '', true, false)
-                                .draw();
-                        }});
-
-                    column.data().unique().sort().each(function(d, j) {{
-                        if(d) {{
-                            select.append('<option value="'+d+'">'+d+'</option>')
-                        }}
-                    }});
-                }});
-            }}
+            }}]
         }});
 
         $(window).on('resize', function() {{
