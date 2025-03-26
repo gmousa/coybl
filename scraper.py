@@ -71,7 +71,7 @@ def scrape_table(url):
         if header_row:
             new_header_row = soup.new_tag('tr')
             thead.append(new_header_row)
-            for cell in header_row.find_all(['td', 'th']):
+            for cell in header_row.find_all(['td', 'th'])[1:]:
                 new_th = soup.new_tag('th')
                 new_th.string = cell.get_text(strip=True)
                 new_header_row.append(new_th)
@@ -80,7 +80,7 @@ def scrape_table(url):
         for row in table.find_all('tr')[1:]:
             new_row = soup.new_tag('tr')
             tbody.append(new_row)
-            for cell in row.find_all(['td', 'th']):
+            for cell in row.find_all(['td', 'th'])[1:]:
                 new_td = soup.new_tag('td')
                 new_td.string = cell.get_text(strip=True)
                 new_row.append(new_td)
@@ -215,6 +215,10 @@ def create_html_content(table_html, title):
             ],
             orderCellsTop: true,
             fixedHeader: true,
+            columnDefs: [{{
+                orderable: false,
+                targets: '_all'
+            }}],
             initComplete: function () {{
                 var api = this.api();
 
@@ -223,7 +227,8 @@ def create_html_content(table_html, title):
                     var column = this;
                     var select = $('<select><option value="">All</option></select>')
                         .appendTo($(column.header()).empty())
-                        .on('change', function () {{
+                        .on('change', function (e) {{
+                            e.stopPropagation(); // Prevent event bubbling
                             var val = $.fn.dataTable.util.escapeRegex($(this).val());
                             column
                                 .search(val ? '^'+val+'$' : '', true, false)
@@ -343,6 +348,10 @@ def create_html_content_2(table_html, title):
             ],
             orderCellsTop: true,
             fixedHeader: true,
+            columnDefs: [{{
+                orderable: false,
+                targets: '_all'
+            }}],
             initComplete: function () {{
                 var api = this.api();
 
@@ -351,7 +360,8 @@ def create_html_content_2(table_html, title):
                     var column = this;
                     var select = $('<select><option value="">All</option></select>')
                         .appendTo($(column.header()).empty())
-                        .on('change', function () {{
+                        .on('change', function (e) {{
+                            e.stopPropagation(); // Prevent event bubbling
                             var val = $.fn.dataTable.util.escapeRegex($(this).val());
                             column
                                 .search(val ? '^'+val+'$' : '', true, false)
