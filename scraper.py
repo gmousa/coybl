@@ -246,26 +246,31 @@ def create_html_content(table_html, title):
             }}]
         }});
 
-        // Populate date filter (assuming date is in column 0)
-        var dates = table.column(1).data().unique().sort().each(function(d) {{
+        // Debug column indices
+        table.columns().every(function(index) {{
+            console.log('Column ' + index + ': ' + $(this.header()).text());
+        }});
+
+        // Populate date filter
+        table.column(1).data().unique().sort().each(function(d) {{
             $('#dateFilter').append($('<option>', {{
                 value: d,
                 text: d
             }}));
         }});
 
-        // Populate venue filter (assuming venue is in column 2)
-        var venues = table.column(8).data().unique().sort().each(function(d) {{
+        // Populate venue filter
+        table.column(8).data().unique().sort().each(function(d) {{
             $('#venueFilter').append($('<option>', {{
                 value: d,
                 text: d
             }}));
         }});
 
-        // Populate team filter (combining home and visitor teams)
+        // Populate team filter
         var teams = new Set();
-        table.column(6).data().each(function(d) {{ teams.add(d); }}); // Home teams
-        table.column(7).data().each(function(d) {{ teams.add(d); }}); // Visiting teams
+        table.column(6).data().each(function(d) {{ teams.add(d); }});
+        table.column(7).data().each(function(d) {{ teams.add(d); }});
         Array.from(teams).sort().forEach(function(team) {{
             $('#teamFilter').append($('<option>', {{
                 value: team,
@@ -275,25 +280,26 @@ def create_html_content(table_html, title):
 
         // Filter handlers
         $('#dateFilter').on('change', function() {{
-            table.column(1).search(this.value).draw();
+            table.column(1).search($(this).val()).draw();
         }});
 
         $('#venueFilter').on('change', function() {{
-            table.column(8).search(this.value).draw();
+            table.column(8).search($(this).val()).draw();
         }});
 
-        $('#teamFilter').on('change', function() {
-            var searchTerm = this.value;
-            table.draw(function(settings, data, dataIndex) {
-                var homeTeam = data[6];
-                var visitorTeam = data[7];
-                if (searchTerm === '') {
-                    return true;
-                }
-                return homeTeam === searchTerm || visitorTeam === searchTerm;
-            });
-        });
-
+        $('#teamFilter').on('change', function() {{
+            var searchTerm = $(this).val();
+            table.rows().every(function() {{
+                var d = this.data();
+                var homeTeam = d[6];
+                var visitorTeam = d[7];
+                if (!searchTerm || homeTeam === searchTerm || visitorTeam === searchTerm) {{
+                    $(this.node()).show();
+                }} else {{
+                    $(this.node()).hide();
+                }}
+            }});
+        }});
 
         $(window).on('resize', function() {{
             table.columns.adjust();
