@@ -200,7 +200,7 @@ def create_html_content(table_html, title):
     }}
     </style>
 
-    <script>
+   <script>
     $(document).ready(function() {{
         // Setup - add a select to each header cell
         $('#myTable thead tr').clone(true).addClass('filters').appendTo('#myTable thead');
@@ -219,14 +219,10 @@ def create_html_content(table_html, title):
                 var api = this.api();
 
                 // For each column
-                api.columns().eq(0).each(function (colIdx) {{
+                api.columns().every(function () {{
                     var column = this;
-                    var cell = $('.filters th').eq($(api.column(colIdx).header()).index());
-                    var title = $(cell).text();
-
-                    // Create select element
                     var select = $('<select><option value="">All</option></select>')
-                        .appendTo($(cell).empty())
+                        .appendTo($(column.header()).empty())
                         .on('change', function () {{
                             var val = $.fn.dataTable.util.escapeRegex($(this).val());
                             column
@@ -234,10 +230,10 @@ def create_html_content(table_html, title):
                                 .draw();
                         }});
 
-                    // Add options to the select - get unique values from the column
-                    column.data().unique().sort().each(function (d, j) {{
+                    // Get unique values from this specific column
+                    column.data().unique().sort().each(function(d, j) {{
                         if(d) {{ // Only add non-empty values
-                            select.append('<option value="'+d+'">'+d+'</option>');
+                            select.append('<option value="'+d+'">'+d+'</option>')
                         }}
                     }});
                 }});
@@ -351,14 +347,10 @@ def create_html_content_2(table_html, title):
                 var api = this.api();
 
                 // For each column
-                api.columns().eq(0).each(function (colIdx) {{
+                api.columns().every(function () {{
                     var column = this;
-                    var cell = $('.filters th').eq($(api.column(colIdx).header()).index());
-                    var title = $(cell).text();
-
-                    // Create select element
                     var select = $('<select><option value="">All</option></select>')
-                        .appendTo($(cell).empty())
+                        .appendTo($(column.header()).empty())
                         .on('change', function () {{
                             var val = $.fn.dataTable.util.escapeRegex($(this).val());
                             column
@@ -366,10 +358,10 @@ def create_html_content_2(table_html, title):
                                 .draw();
                         }});
 
-                    // Add options to the select - get unique values from the column
-                    column.data().unique().sort().each(function (d, j) {{
+                    // Get unique values from this specific column
+                    column.data().unique().sort().each(function(d, j) {{
                         if(d) {{ // Only add non-empty values
-                            select.append('<option value="'+d+'">'+d+'</option>');
+                            select.append('<option value="'+d+'">'+d+'</option>')
                         }}
                     }});
                 }});
