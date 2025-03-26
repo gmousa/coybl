@@ -186,6 +186,15 @@ def create_html_content(table_html, title):
     .filters th {{
         padding: 4px !important;
     }}
+    .filters-container {{
+        margin: 20px 0;
+        text-align: center;
+    }}
+    .filters-container select {{
+        margin: 0 10px;
+        padding: 5px;
+        min-width: 150px;
+    }}
     .navigation a {{
         margin: 0 1rem;
         color: #333;
@@ -216,10 +225,8 @@ def create_html_content(table_html, title):
     }}
     </style>
 
-   <script>
+       <script>
     $(document).ready(function() {{
-        $('#myTable thead tr').clone(true).addClass('filters').appendTo('#myTable thead');
-        
         var table = $('#myTable').DataTable({{
             pageLength: 25,
             scrollX: true,
@@ -236,29 +243,50 @@ def create_html_content(table_html, title):
                 orderable: false,
                 targets: '_all',
                 width: 'auto'
-            }}],
-            initComplete: function () {{
-                var api = this.api();
-                
-                api.columns().every(function () {{
-                    var column = this;
-                    var select = $('<select><option value="">All</option></select>')
-                        .appendTo($(column.header()).empty())
-                        .on('change', function (e) {{
-                            e.stopPropagation();
-                            var val = $.fn.dataTable.util.escapeRegex($(this).val());
-                            column
-                                .search(val ? '^'+val+'$' : '', true, false)
-                                .draw();
-                        }});
+            }}]
+        }});
 
-                    column.data().unique().sort().each(function(d, j) {{
-                        if(d) {{
-                            select.append('<option value="'+d+'">'+d+'</option>')
-                        }}
-                    }});
-                }});
-            }}
+        // Populate date filter (assuming date is in column 0)
+        var dates = table.column(0).data().unique().sort().each(function(d) {{
+            $('#dateFilter').append($('<option>', {{
+                value: d,
+                text: d
+            }}));
+        }});
+
+        // Populate venue filter (assuming venue is in column 2)
+        var venues = table.column(2).data().unique().sort().each(function(d) {{
+            $('#venueFilter').append($('<option>', {{
+                value: d,
+                text: d
+            }}));
+        }});
+
+        // Populate team filter (combining home and visitor teams)
+        var teams = new Set();
+        table.column(3).data().each(function(d) {{ teams.add(d); }}); // Home teams
+        table.column(4).data().each(function(d) {{ teams.add(d); }}); // Visiting teams
+        Array.from(teams).sort().forEach(function(team) {{
+            $('#teamFilter').append($('<option>', {{
+                value: team,
+                text: team
+            }}));
+        }});
+
+        // Filter handlers
+        $('#dateFilter').on('change', function() {{
+            table.column(0).search(this.value).draw();
+        }});
+
+        $('#venueFilter').on('change', function() {{
+            table.column(2).search(this.value).draw();
+        }});
+
+        $('#teamFilter').on('change', function() {{
+            var searchTerm = this.value;
+            table.column(3).search(searchTerm)
+                .column(4).search(searchTerm)
+                .draw();
         }});
 
         $(window).on('resize', function() {{
@@ -276,6 +304,17 @@ def create_html_content(table_html, title):
         <a href="hs-ny.html">High School NY</a>
     </div>
     <h1 style="text-align: center;">{title}</h1>
+        <div class="filters-container" style="margin-bottom: 20px; text-align: center;">
+        <select id="dateFilter" style="margin-right: 10px; padding: 5px;">
+            <option value="">All Dates</option>
+        </select>
+        <select id="venueFilter" style="margin-right: 10px; padding: 5px;">
+            <option value="">All Venues</option>
+        </select>
+        <select id="teamFilter" style="margin-right: 10px; padding: 5px;">
+            <option value="">All Teams</option>
+        </select>
+    </div>
     <div class="table-responsive">
         {table_html}
     </div>
