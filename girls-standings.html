@@ -53,14 +53,23 @@
         background: E9ECEF_1;
         border-radius: 4px;
     }
+    .filters select {
+        width: 100%;
+        padding: 3px;
+        box-sizing: border-box;
+        margin-top: 3px;
+    }
+    .filters th {
+        padding: 4px !important;
+    }
     </style>
 
     <script>
     $(document).ready(function() {
-        // Add input field to each column header
+        // Setup - add a select to each header cell
         $('#myTable thead tr').clone(true).addClass('filters').appendTo('#myTable thead');
 
-        $('#myTable').DataTable({
+        var table = $('#myTable').DataTable({
             responsive: true,
             pageLength: 25,
             order: [[0, 'asc']],
@@ -74,34 +83,27 @@
                 var api = this.api();
 
                 // For each column
-                api.columns().eq(0).each(function(colIdx) {
-                    // Add a text input field to each column header
+                api.columns().eq(0).each(function (colIdx) {
+                    var column = this;
                     var cell = $('.filters th').eq($(api.column(colIdx).header()).index());
                     var title = $(cell).text();
-                    $(cell).html('<input type="text" placeholder="Filter ' + title + '" />');
 
-                    // On keyup in the filter input
-                    $('input', $('.filters th').eq($(api.column(colIdx).header()).index()))
-                        .off('keyup change')
-                        .on('keyup change', function (e) {
-                            e.stopPropagation();
-
-                            // Get the search value
-                            $(this).attr('title', $(this).val());
-                            var regexr = '({search})';
-
-                            // Search the column for that value
-                            api
-                                .column(colIdx)
-                                .search(
-                                    this.value != ''
-                                        ? regexr.replace('{search}', '(((' + this.value + ')))')
-                                        : '',
-                                    this.value != '',
-                                    this.value == ''
-                                )
+                    // Create select element
+                    var select = $('<select><option value="">All</option></select>')
+                        .appendTo($(cell).empty())
+                        .on('change', function () {
+                            var val = $.fn.dataTable.util.escapeRegex($(this).val());
+                            column
+                                .search(val ? '^'+val+'$' : '', true, false)
                                 .draw();
                         });
+
+                    // Add options to the select - get unique values from the column
+                    column.data().unique().sort().each(function (d, j) {
+                        if(d) { // Only add non-empty values
+                            select.append('<option value="'+d+'">'+d+'</option>');
+                        }
+                    });
                 });
             }
         });
@@ -121,7 +123,7 @@
         <table class="table-striped display" id="myTable"><thead><tr><th>Team</th><th>Won</th><th>Lost</th><th>Tied</th><th>Pct.</th><th>PF</th><th>PA</th><th>PD</th></tr></thead><tbody><tr><td>#1  Staten Island 1</td><td>10</td><td>0</td><td>0</td><td>1.000</td><td>352</td><td>110</td><td>242</td></tr><tr><td>#2  Holmdel</td><td>10</td><td>0</td><td>0</td><td>1.000</td><td>306</td><td>88</td><td>218</td></tr><tr><td>#3  Bergen</td><td>8</td><td>2</td><td>0</td><td>.800</td><td>204</td><td>106</td><td>98</td></tr><tr><td>#4  West Side</td><td>7</td><td>3</td><td>0</td><td>.700</td><td>232</td><td>122</td><td>110</td></tr><tr><td>#6  Belleville</td><td>6</td><td>3</td><td>0</td><td>.667</td><td>178</td><td>81</td><td>97</td></tr><tr><td>#5  Astoria</td><td>6</td><td>3</td><td>0</td><td>.667</td><td>188</td><td>158</td><td>30</td></tr><tr><td>#7  East Brunswick</td><td>5</td><td>4</td><td>0</td><td>.556</td><td>236</td><td>165</td><td>71</td></tr><tr><td>Makkar</td><td>3</td><td>5</td><td>0</td><td>.375</td><td>121</td><td>203</td><td>-82</td></tr><tr><td>#8  Brooklyn</td><td>3</td><td>6</td><td>0</td><td>.333</td><td>125</td><td>181</td><td>-56</td></tr><tr><td>Long Island</td><td>2</td><td>6</td><td>0</td><td>.250</td><td>115</td><td>121</td><td>-6</td></tr><tr><td>Upstate</td><td>2</td><td>6</td><td>0</td><td>.250</td><td>105</td><td>161</td><td>-56</td></tr><tr><td>Bayonne</td><td>2</td><td>6</td><td>0</td><td>.250</td><td>115</td><td>180</td><td>-65</td></tr><tr><td>Howell</td><td>2</td><td>6</td><td>0</td><td>.250</td><td>67</td><td>284</td><td>-217</td></tr><tr><td>Piscataway</td><td>0</td><td>8</td><td>0</td><td>.000</td><td>64</td><td>252</td><td>-188</td></tr><tr><td>Staten Island 3</td><td>0</td><td>8</td><td>0</td><td>.000</td><td>48</td><td>244</td><td>-196</td></tr></tbody></table>
     </div>
     <p style="text-align: center; font-size: 0.8em;">
-        Last updated: 2025-03-26 01:11:29 UTC
+        Last updated: 2025-03-26 01:14:35 UTC
     </p>
 </body>
 </html>
