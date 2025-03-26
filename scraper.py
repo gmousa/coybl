@@ -57,9 +57,8 @@ def scrape_table(url):
     if table:
         # Create a new table structure
         new_table = soup.new_tag('table')
-        new_table['class'] = ['tableview', 'display', 'nowrap']
+        new_table['class'] = ['tableview', 'display']
         new_table['id'] = 'myTable'
-        new_table['style'] = 'width:100%'
 
         # Create thead and tbody
         thead = soup.new_tag('thead')
@@ -72,7 +71,6 @@ def scrape_table(url):
         if header_row:
             new_header_row = soup.new_tag('tr')
             thead.append(new_header_row)
-            # Skip first column by starting from index 1
             for cell in header_row.find_all(['td', 'th'])[1:]:
                 new_th = soup.new_tag('th')
                 new_th.string = cell.get_text(strip=True)
@@ -82,7 +80,6 @@ def scrape_table(url):
         for row in table.find_all('tr')[1:]:
             new_row = soup.new_tag('tr')
             tbody.append(new_row)
-            # Skip first column by starting from index 1
             for cell in row.find_all(['td', 'th'])[1:]:
                 new_td = soup.new_tag('td')
                 new_td.string = cell.get_text(strip=True)
@@ -162,29 +159,6 @@ def create_html_content(table_html, title):
         clear: both;
         padding: 20px;
     }}
-    table.dataTable {{
-        width: 100% !important;
-        margin: 0 auto;
-        clear: both;
-        border-collapse: separate;
-        border-spacing: 0;
-        table-layout: fixed;
-    }}
-    .dataTables_wrapper {{
-        width: 100%;
-    }}
-    thead tr:first-child th {{
-        text-align: left;
-        white-space: nowrap;
-    }}
-    td {{
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }}
-    .filters select {{
-        width: 100%;
-    }}
     table {{
         width: 100%;
         border-collapse: collapse;
@@ -232,6 +206,7 @@ def create_html_content(table_html, title):
         $('#myTable thead tr').clone(true).addClass('filters').appendTo('#myTable thead');
 
         var table = $('#myTable').DataTable({{
+            responsive: true,
             pageLength: 25,
             order: [[0, 'asc']],
             dom: 'Bfrtip',
@@ -240,42 +215,35 @@ def create_html_content(table_html, title):
             ],
             orderCellsTop: true,
             fixedHeader: true,
-            responsive: false,
-            autoWidth: false,
-            columnDefs: [
-                {{
-                    orderable: false,
-                    targets: '_all'
-                }},
-                {{
-                    className: 'dt-head-left dt-body-left',
-                    targets: '_all'
-                }}
-            ],
+            columnDefs: [{{
+                orderable: false,
+                targets: '_all'
+            }}],
             initComplete: function () {{
-                this.api().columns().every(function () {{
+                var api = this.api();
+
+                // For each column
+                api.columns().every(function () {{
                     var column = this;
                     var select = $('<select><option value="">All</option></select>')
                         .appendTo($(column.header()).empty())
                         .on('change', function (e) {{
-                            e.stopPropagation();
+                            e.stopPropagation(); // Prevent event bubbling
                             var val = $.fn.dataTable.util.escapeRegex($(this).val());
                             column
                                 .search(val ? '^'+val+'$' : '', true, false)
                                 .draw();
                         }});
 
+                    // Get unique values from this specific column
                     column.data().unique().sort().each(function(d, j) {{
-                        if(d) {{
+                        if(d) {{ // Only add non-empty values
                             select.append('<option value="'+d+'">'+d+'</option>')
                         }}
                     }});
                 }});
             }}
         }});
-
-        // Adjust column widths after initialization
-        table.columns.adjust();
     }});
     </script>
 </head>
@@ -324,29 +292,6 @@ def create_html_content_2(table_html, title):
         clear: both;
         padding: 20px;
     }}
-    table.dataTable {{
-        width: 100% !important;
-        margin: 0 auto;
-        clear: both;
-        border-collapse: separate;
-        border-spacing: 0;
-        table-layout: fixed;
-    }}
-    .dataTables_wrapper {{
-        width: 100%;
-    }}
-    thead tr:first-child th {{
-        text-align: left;
-        white-space: nowrap;
-    }}
-    td {{
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }}
-    .filters select {{
-        width: 100%;
-    }}
     table {{
         width: 100%;
         border-collapse: collapse;
@@ -394,6 +339,7 @@ def create_html_content_2(table_html, title):
         $('#myTable thead tr').clone(true).addClass('filters').appendTo('#myTable thead');
 
         var table = $('#myTable').DataTable({{
+            responsive: true,
             pageLength: 25,
             order: [[0, 'asc']],
             dom: 'Bfrtip',
@@ -402,42 +348,35 @@ def create_html_content_2(table_html, title):
             ],
             orderCellsTop: true,
             fixedHeader: true,
-            responsive: false,
-            autoWidth: false,
-            columnDefs: [
-                {{
-                    orderable: false,
-                    targets: '_all'
-                }},
-                {{
-                    className: 'dt-head-left dt-body-left',
-                    targets: '_all'
-                }}
-            ],
+            columnDefs: [{{
+                orderable: false,
+                targets: '_all'
+            }}],
             initComplete: function () {{
-                this.api().columns().every(function () {{
+                var api = this.api();
+
+                // For each column
+                api.columns().every(function () {{
                     var column = this;
                     var select = $('<select><option value="">All</option></select>')
                         .appendTo($(column.header()).empty())
                         .on('change', function (e) {{
-                            e.stopPropagation();
+                            e.stopPropagation(); // Prevent event bubbling
                             var val = $.fn.dataTable.util.escapeRegex($(this).val());
                             column
                                 .search(val ? '^'+val+'$' : '', true, false)
                                 .draw();
                         }});
 
+                    // Get unique values from this specific column
                     column.data().unique().sort().each(function(d, j) {{
-                        if(d) {{
+                        if(d) {{ // Only add non-empty values
                             select.append('<option value="'+d+'">'+d+'</option>')
                         }}
                     }});
                 }});
             }}
         }});
-
-        // Adjust column widths after initialization
-        table.columns.adjust();
     }});
     </script>
 </head>
