@@ -99,10 +99,17 @@ def create_html_content(table_html, title):
 
     <!-- Add jQuery -->
     <script type="text/javascript" src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-
     <!-- Add DataTables JS -->
-    <script type="text/javascript" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
     <script type="text/javascript" src="https://cdn.datatables.net/responsive/2.2.9/js/dataTables.responsive.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/buttons/2.3.6/js/dataTables.buttons.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/searchbuilder/1.4.2/js/dataTables.searchBuilder.min.js"></script>
+
+    <!-- Add DataTables CSS -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/responsive/2.2.9/css/responsive.dataTables.min.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/2.3.6/css/buttons.dataTables.min.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/searchbuilder/1.4.2/css/searchBuilder.dataTables.min.css">
 
     <style>
     .table-responsive {{
@@ -153,52 +160,16 @@ def create_html_content(table_html, title):
 
     <script>
     $(document).ready(function() {{
-        // Add input field to each column header
-        $('#myTable thead tr').clone(true).addClass('filters').appendTo('#myTable thead');
-
         $('#myTable').DataTable({{
             responsive: true,
             pageLength: 25,
             order: [[0, 'asc']],
-            dom: 'Bfrtip',
+            dom: 'QBfrtip',
             buttons: [
                 'copy', 'csv', 'excel', 'pdf', 'print'
             ],
-            orderCellsTop: true,
-            fixedHeader: true,
-            initComplete: function () {{
-                var api = this.api();
-
-                // For each column
-                api.columns().eq(0).each(function(colIdx) {{
-                    // Add a text input field to each column header
-                    var cell = $('.filters th').eq($(api.column(colIdx).header()).index());
-                    var title = $(cell).text();
-                    $(cell).html('<input type="text" placeholder="Filter ' + title + '" />');
-
-                    // On keyup in the filter input
-                    $('input', $('.filters th').eq($(api.column(colIdx).header()).index()))
-                        .off('keyup change')
-                        .on('keyup change', function (e) {{
-                            e.stopPropagation();
-
-                            // Get the search value
-                            $(this).attr('title', $(this).val());
-                            var regexr = '({{search}})';
-
-                            // Search the column for that value
-                            api
-                                .column(colIdx)
-                                .search(
-                                    this.value != ''
-                                        ? regexr.replace('{{search}}', '(((' + this.value + ')))')
-                                        : '',
-                                    this.value != '',
-                                    this.value == ''
-                                )
-                                .draw();
-                        }});
-                }});
+            searchBuilder: {{
+                columns: '_all'
             }}
         }});
     }});
