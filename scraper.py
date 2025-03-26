@@ -51,7 +51,6 @@ tables_config_2 = {
 }
 
 def scrape_table(url):
-    # Your existing scrape_table function remains the same
     response = requests.get(url)
     soup = BeautifulSoup(response.text, 'html.parser')
     table = soup.find('table', {'class': 'tableview'})
@@ -59,17 +58,39 @@ def scrape_table(url):
         # Add a class to the table for DataTables
         table['class'] = ['tableview', 'display']
         table['id'] = 'myTable'
-        for font_tag in table.find_all('font'):
-            font_tag.replace_with(font_tag.string)
-        for a_tag in table.find_all('a'):
-            if 'style' in a_tag.attrs:
-                del a_tag['style']
+
+        # Process header row
+        header_row = table.find('tr')
+        if header_row:
+            header_cells = header_row.find_all(['td', 'th'])
+            num_columns = len(header_cells)
+            # Convert all header cells to th
+            for cell in header_cells:
+                new_th = soup.new_tag('th')
+                new_th.string = cell.get_text(strip=True)
+                cell.replace_with(new_th)
+
+        # Process all other rows
+        for row in table.find_all('tr')[1:]:
+            cells = row.find_all(['td', 'th'])
+            # Convert all cells to td
+            for cell in cells:
+                new_td = soup.new_tag('td')
+                # Preserve text content
+                new_td.string = cell.get_text(strip=True)
+                cell.replace_with(new_td)
+
+            # Ensure each row has the same number of columns
+            current_cells = len(row.find_all('td'))
+            if current_cells < num_columns:
+                for _ in range(num_columns - current_cells):
+                    new_td = soup.new_tag('td')
+                    row.append(new_td)
+
         return str(table)
     return "<p>No table found</p>"
 
-
 def scrape_table_2(url):
-    # Your existing scrape_table function remains the same
     response = requests.get(url)
     soup = BeautifulSoup(response.text, 'html.parser')
     table = soup.find('table', {'class': 'table-striped'})
@@ -77,11 +98,35 @@ def scrape_table_2(url):
         # Add a class to the table for DataTables
         table['class'] = ['table-striped', 'display']
         table['id'] = 'myTable'
-        for font_tag in table.find_all('font'):
-            font_tag.replace_with(font_tag.string)
-        for a_tag in table.find_all('a'):
-            if 'style' in a_tag.attrs:
-                del a_tag['style']
+
+        # Process header row
+        header_row = table.find('tr')
+        if header_row:
+            header_cells = header_row.find_all(['td', 'th'])
+            num_columns = len(header_cells)
+            # Convert all header cells to th
+            for cell in header_cells:
+                new_th = soup.new_tag('th')
+                new_th.string = cell.get_text(strip=True)
+                cell.replace_with(new_th)
+
+        # Process all other rows
+        for row in table.find_all('tr')[1:]:
+            cells = row.find_all(['td', 'th'])
+            # Convert all cells to td
+            for cell in cells:
+                new_td = soup.new_tag('td')
+                # Preserve text content
+                new_td.string = cell.get_text(strip=True)
+                cell.replace_with(new_td)
+
+            # Ensure each row has the same number of columns
+            current_cells = len(row.find_all('td'))
+            if current_cells < num_columns:
+                for _ in range(num_columns - current_cells):
+                    new_td = soup.new_tag('td')
+                    row.append(new_td)
+
         return str(table)
     return "<p>No table found</p>"
 
