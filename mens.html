@@ -1,0 +1,219 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mens</title>
+    <!-- Add DataTables CSS -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
+
+    <!-- Add jQuery -->
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <!-- Add DataTables JS -->
+    <script type="text/javascript" src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/buttons/2.3.6/js/dataTables.buttons.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/searchbuilder/1.4.2/js/dataTables.searchBuilder.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.2/moment.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/plug-ins/1.13.4/sorting/datetime-moment.js"></script>
+
+
+    <!-- Add DataTables CSS -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/responsive/2.2.9/css/responsive.dataTables.min.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/2.3.6/css/buttons.dataTables.min.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/searchbuilder/1.4.2/css/searchBuilder.dataTables.min.css">
+
+    <style>
+    .table-responsive {
+        width: 100%;
+        margin: 0 auto;
+        clear: both;
+        padding: 20px;
+    }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        color: black !important;
+    }
+    td, th {
+        padding: 8px;
+        color: black !important;
+    }
+    a {
+        color: black !important;
+        text-decoration: none;
+    }
+    .navigation {
+        background: F8F9FA_1;
+        padding: 1rem;
+        margin-bottom: 2rem;
+        text-align: center;
+        border-bottom: 1px solid #ddd;
+    }
+    .filters select {
+        width: 100%;
+        padding: 3px;
+        box-sizing: border-box;
+        margin-top: 3px;
+    }
+    .filters th {
+        padding: 4px !important;
+    }
+    .filters-container {
+        margin: 20px 0;
+        text-align: center;
+    }
+    .filters-container select {
+        margin: 0 10px;
+        padding: 5px;
+        min-width: 150px;
+    }
+    .navigation a {
+        margin: 0 1rem;
+        color: #333;
+        text-decoration: none;
+        padding: 0.5rem 1rem;
+    }
+    .navigation a:hover {
+        background: E9ECEF_1;
+        border-radius: 4px;
+    }
+     .dataTables_wrapper {
+        overflow-x: auto;
+        width: 100%;
+    }
+    table.dataTable {
+        min-width: 100%;
+        max-width: none;
+        table-layout: auto !important;
+    }
+    table.dataTable td, table.dataTable th {
+        white-space: nowrap;
+        min-width: 100px;
+    }
+    table.dataTable thead .sorting,
+    table.dataTable thead .sorting_asc,
+    table.dataTable thead .sorting_desc {
+        background-image: none;
+    }
+    </style>
+
+    <script>
+    $(document).ready(function() {
+        // Set the date format for parsing
+        $.fn.dataTable.moment('M/D/YYYY');
+        
+        var table = $('#myTable').DataTable({
+            scrollX: true,
+            scrollCollapse: true,
+            paging: false,
+            responsive: false,
+            autoWidth: false,
+            order: [[1, 'asc']], // Sort by date column (index 1)
+            dom: 'Brti',
+            buttons: [
+                'copy', 'csv', 'excel', 'pdf', 'print'
+            ],
+            columnDefs: [{
+                orderable: false,
+                targets: '_all',
+                width: 'auto'
+            },
+            {
+                targets: 1,
+                orderable: true,
+                type: 'date'
+            }]
+        });
+
+        // Debug column indices
+        table.columns().every(function(index) {
+            console.log('Column ' + index + ': ' + $(this.header()).text());
+        });
+
+        // Populate date filter
+        table.column(1).data().unique().sort().each(function(d) {
+            $('#dateFilter').append($('<option>', {
+                value: d,
+                text: d
+            }));
+        });
+
+        // Populate venue filter
+        table.column(8).data().unique().sort().each(function(d) {
+            $('#venueFilter').append($('<option>', {
+                value: d,
+                text: d
+            }));
+        });
+
+        // Populate team filter
+        var teams = new Set();
+        table.column(6).data().each(function(d) { teams.add(d); });
+        table.column(7).data().each(function(d) { teams.add(d); });
+        Array.from(teams).sort().forEach(function(team) {
+            $('#teamFilter').append($('<option>', {
+                value: team,
+                text: team
+            }));
+        });
+
+        // Filter handlers
+        $('#dateFilter').on('change', function() {
+            table.column(1).search($(this).val()).draw();
+        });
+
+        $('#venueFilter').on('change', function() {
+            table.column(8).search($(this).val()).draw();
+        });
+
+        $('#teamFilter').on('change', function() {
+            var searchTerm = $(this).val();
+            table.rows().every(function() {
+                var d = this.data();
+                var homeTeam = d[6];
+                var visitorTeam = d[7];
+                if (!searchTerm || homeTeam === searchTerm || visitorTeam === searchTerm) {
+                    $(this.node()).show();
+                } else {
+                    $(this.node()).hide();
+                }
+            });
+        });
+
+        $(window).on('resize', function() {
+            table.columns.adjust();
+        });
+    });
+    </script>
+</head>
+<body>
+    <div class="navigation">
+        <a href="hs-nj.html">High School NJ</a>
+        <a href="girls.html">Girls</a>
+        <a href="junior-high.html">Junior High</a>
+        <a href="college.html">College</a>
+        <a href="hs-ny.html">High School NY</a>
+         <a href="mens.html">Mens</a>
+    </div>
+    <h1 style="text-align: center;">Mens</h1>
+        <div class="filters-container" style="margin-bottom: 20px; text-align: center;">
+        <select id="dateFilter" style="margin-right: 10px; padding: 5px;">
+            <option value="">All Dates</option>
+        </select>
+        <select id="venueFilter" style="margin-right: 10px; padding: 5px;">
+            <option value="">All Venues</option>
+        </select>
+        <select id="teamFilter" style="margin-right: 10px; padding: 5px;">
+            <option value="">All Teams</option>
+        </select>
+    </div>
+    <div class="table-responsive">
+        <table class="tableview display" id="myTable"><thead><tr><th>Day</th><th>Date</th><th>Time</th><th>End Time</th><th>Status</th><th>Score</th><th>Visitors</th><th>Home</th><th>Venue</th><th>Officials</th></tr></thead><tbody><tr><td>Sat</td><td>5/3/2025</td><td>2:30 pm</td><td></td><td>TBP</td><td></td><td>East Brunswick 2</td><td>Holmdel 1</td><td>Multi Sports Kingdom (Marlboro) Court 1</td><td></td></tr><tr><td>Sat</td><td>5/3/2025</td><td>3:00 pm</td><td></td><td>TBP</td><td></td><td>Staten Island 3 (OLZ)</td><td>Summit</td><td>Corpus Christi (EB court)</td><td></td></tr><tr><td>Sat</td><td>5/3/2025</td><td>5:30 pm</td><td></td><td>TBP</td><td></td><td>East Brunswick 1</td><td>Holmdel 2</td><td>Multi Sports Kingdom (Marlboro) Court 1</td><td></td></tr><tr><td>Sun</td><td>5/4/2025</td><td>4:00 pm</td><td></td><td>TBP</td><td></td><td>East Brunswick 2</td><td>East Brunswick 1</td><td>Corpus Christi (EB court)</td><td></td></tr><tr><td>Sun</td><td>5/4/2025</td><td>4:00 pm</td><td></td><td>TBP</td><td></td><td>Staten Island 3 (OLZ)</td><td>Holmdel 1</td><td>Multi Sports Kingdom (Marlboro) Court 1</td><td></td></tr><tr><td>Sun</td><td>5/4/2025</td><td>5:00 pm</td><td></td><td>TBP</td><td></td><td>Holmdel 2</td><td>Brooklyn</td><td>Multi Sports Kingdom (Marlboro) Court 1</td><td></td></tr><tr><td>Sat</td><td>5/10/2025</td><td>12:30 pm</td><td></td><td>TBP</td><td></td><td>Holmdel 2</td><td>Bayonne 1 (SASA)</td><td>Multi Sports Kingdom (Marlboro) Court 1</td><td></td></tr><tr><td>Sat</td><td>5/10/2025</td><td>4:30 pm</td><td></td><td>TBP</td><td></td><td>East Brunswick 2</td><td>Summit</td><td>Multi Sports Kingdom (Marlboro) Court 1</td><td></td></tr><tr><td>Sat</td><td>5/10/2025</td><td>5:30 pm</td><td></td><td>TBP</td><td></td><td>Staten Island 3 (OLZ)</td><td>Bayonne 1 (SASA)</td><td>Multi Sports Kingdom (Marlboro) Court 1</td><td></td></tr><tr><td>Sat</td><td>5/17/2025</td><td>4:00 pm</td><td></td><td>TBP</td><td></td><td>East Brunswick 1</td><td>Brooklyn</td><td>Multi Sports Kingdom (Marlboro) Court 2</td><td></td></tr><tr><td>Sun</td><td>5/18/2025</td><td>2:00 pm</td><td></td><td>TBP</td><td></td><td>East Brunswick 1</td><td>Holmdel 1</td><td>Corpus Christi (EB court)</td><td></td></tr><tr><td>Sun</td><td>5/18/2025</td><td>7:00 pm</td><td></td><td>TBP</td><td></td><td>Summit</td><td>Holmdel 2</td><td>Multi Sports Kingdom (Marlboro) Court 1</td><td></td></tr><tr><td>Sat</td><td>5/31/2025</td><td>12:00 pm</td><td>TBA</td><td>TBP</td><td></td><td>Holmdel 1</td><td>Holmdel 2</td><td>Multi Sports Kingdom (Marlboro) Court 2</td><td></td></tr><tr><td>Sat</td><td>5/31/2025</td><td>4:00 pm</td><td></td><td>TBP</td><td></td><td>East Brunswick 1</td><td>Bayonne 1 (SASA)</td><td>Corpus Christi (EB court)</td><td></td></tr><tr><td>Sat</td><td>5/31/2025</td><td>5:00 pm</td><td></td><td>TBP</td><td></td><td>East Brunswick 2</td><td>Brooklyn</td><td>Corpus Christi (EB court)</td><td></td></tr><tr><td>Sun</td><td>6/1/2025</td><td>2:30 pm</td><td></td><td>TBP</td><td></td><td>Bayonne 1 (SASA)</td><td>Summit</td><td>Multi Sports Kingdom (Marlboro) Court 2</td><td></td></tr><tr><td>Sun</td><td>6/1/2025</td><td>3:30 pm</td><td></td><td>TBP</td><td></td><td>Holmdel 1</td><td>Brooklyn</td><td>Multi Sports Kingdom (Marlboro) Court 2</td><td></td></tr><tr><td>Sun</td><td>6/1/2025</td><td>7:30 pm</td><td></td><td>TBP</td><td></td><td>East Brunswick 2</td><td>Holmdel 2</td><td>Multi Sports Kingdom (Marlboro) Court 2</td><td></td></tr><tr><td>Sat</td><td>6/7/2025</td><td>2:00 pm</td><td></td><td>TBP</td><td></td><td>Staten Island 3 (OLZ)</td><td>East Brunswick 2</td><td>Corpus Christi (EB court)</td><td></td></tr><tr><td>Sat</td><td>6/7/2025</td><td>4:00 pm</td><td></td><td>TBP</td><td></td><td>Holmdel 1</td><td>Bayonne 1 (SASA)</td><td>Multi Sports Kingdom (Marlboro) Court 2</td><td></td></tr><tr><td>Sat</td><td>6/14/2025</td><td>2:30 pm</td><td>TBA</td><td>TBP</td><td></td><td>Summit</td><td>Holmdel 2</td><td>Multi Sports Kingdom (Marlboro) Court 1</td><td></td></tr><tr><td>Sat</td><td>6/14/2025</td><td>4:00 pm</td><td></td><td>TBP</td><td></td><td>Staten Island 3 (OLZ)</td><td>East Brunswick 1</td><td>Multi Sports Kingdom (Marlboro) Court 2</td><td></td></tr><tr><td>Sat</td><td>6/14/2025</td><td>5:00 pm</td><td></td><td>TBP</td><td></td><td>Summit</td><td>Holmdel 1</td><td>Multi Sports Kingdom (Marlboro) Court 2</td><td></td></tr><tr><td>Sat</td><td>6/21/2025</td><td>10:00 am</td><td></td><td>TBP</td><td></td><td>Holmdel 1</td><td>Bayonne 1 (SASA)</td><td>Multi Sports Kingdom (Marlboro) Court 2</td><td></td></tr><tr><td>Sat</td><td>6/21/2025</td><td>11:00 am</td><td></td><td>TBP</td><td></td><td>Holmdel 2</td><td>Staten Island 3 (OLZ)</td><td>Multi Sports Kingdom (Marlboro) Court 2</td><td></td></tr><tr><td>Sat</td><td>6/21/2025</td><td>12:00 pm</td><td></td><td>TBP</td><td></td><td>Brooklyn</td><td>Summit</td><td>Multi Sports Kingdom (Marlboro) Court 2</td><td></td></tr><tr><td>Sun</td><td>6/22/2025</td><td>2:30 pm</td><td></td><td>TBP</td><td></td><td>Summit</td><td>East Brunswick 1</td><td>Multi Sports Kingdom (Marlboro) Court 2</td><td></td></tr><tr><td>Sun</td><td>6/22/2025</td><td>3:30 pm</td><td></td><td>TBP</td><td></td><td>East Brunswick 2</td><td>Bayonne 1 (SASA)</td><td>Multi Sports Kingdom (Marlboro) Court 2</td><td></td></tr><tr><td>Sun</td><td>6/22/2025</td><td>5:30 pm</td><td></td><td>TBP</td><td></td><td>Staten Island 3 (OLZ)</td><td>Brooklyn</td><td>Multi Sports Kingdom (Marlboro) Court 2</td><td></td></tr><tr><td>Sat</td><td>6/28/2025</td><td>2:00 pm</td><td></td><td>TBP</td><td></td><td>Bayonne 1 (SASA)</td><td>Brooklyn</td><td>Multi Sports Kingdom (Marlboro) Court 2</td><td></td></tr><tr><td>Sat</td><td>6/28/2025</td><td>4:00 pm</td><td></td><td>TBP</td><td></td><td>East Brunswick 1</td><td>East Brunswick 2</td><td>Corpus Christi (EB court)</td><td></td></tr><tr><td>Sun</td><td>6/29/2025</td><td>3:00 pm</td><td></td><td>TBP</td><td></td><td>Brooklyn</td><td>Staten Island 3 (OLZ)</td><td>Multi Sports Kingdom (Marlboro) Court 1</td><td></td></tr></tbody></table>
+    </div>
+    <p style="text-align: center; font-size: 0.8em;">
+        Last updated: 2025-04-29 01:25:10 UTC
+    </p>
+</body>
+</html>
