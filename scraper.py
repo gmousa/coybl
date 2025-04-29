@@ -54,7 +54,7 @@ tables_config_2 = {
     },
      "mens-standings": {
         "url": "https://www.leaguelineup.com/standings_basketball.asp?url=nacopticleague&divisionid=1057876",
-        "title": "High School NY"
+        "title": "Mens"
     },
 }
 
