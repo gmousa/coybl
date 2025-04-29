@@ -430,7 +430,7 @@ def create_html_content_2(table_html, title):
     }}
     table.dataTable td, table.dataTable th {{
         white-space: nowrap;
-        min-width: 100px;
+        padding: 8px;
     }}
     table.dataTable thead .sorting,
     table.dataTable thead .sorting_asc,
