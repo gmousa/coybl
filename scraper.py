@@ -10,7 +10,7 @@ tables_config = {
         "title": "High School NJ"
     },
     "girls": {
-        "url": "https://www.leaguelineup.com/schedules.asp?url=nacopticleague&divisionid=468032",
+        "url": "https://www.leaguelineup.com/schedules.asp?url=nacopticleague&divisionid=468032&teamid=99999",
         "title": "Girls"
     },
     "junior-high": {
@@ -24,6 +24,10 @@ tables_config = {
     "hs-ny": {
         "url": "https://www.leaguelineup.com/schedules.asp?url=nacopticleague&divisionid=1020928",
         "title": "High School NY"
+    },
+     "mens": {
+        "url": "https://www.leaguelineup.com/schedules.asp?url=nacopticleague&divisionid=1057876",
+        "title": "Mens"
     },
 }
 
@@ -46,6 +50,10 @@ tables_config_2 = {
     },
     "hs-ny-standings": {
         "url": "https://www.leaguelineup.com/standings_basketball.asp?url=nacopticleague&divisionid=1020928",
+        "title": "High School NY"
+    },
+     "mens-standings": {
+        "url": "https://www.leaguelineup.com/standings_basketball.asp?url=nacopticleague&divisionid=1057876",
         "title": "High School NY"
     },
 }
@@ -324,6 +332,7 @@ def create_html_content(table_html, title):
         <a href="junior-high.html">Junior High</a>
         <a href="college.html">College</a>
         <a href="hs-ny.html">High School NY</a>
+         <a href="mens.html">Mens</a>
     </div>
     <h1 style="text-align: center;">{title}</h1>
         <div class="filters-container" style="margin-bottom: 20px; text-align: center;">
@@ -463,6 +472,7 @@ def create_html_content_2(table_html, title):
         <a href="junior-high-standings.html">Junior High</a>
         <a href="college-standings.html">College</a>
         <a href="hs-ny-standings.html">High School NY</a>
+         <a href="mens-standings.html">Mens</a>
     </div>
     <h1 style="text-align: center;">{title}</h1>
     <div class="table-responsive">
